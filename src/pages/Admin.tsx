@@ -53,8 +53,8 @@ interface Template {
 interface PageView {
   id: string;
   page_path: string;
+  user_id: string | null;
   created_at: string;
-  profiles?: { email: string | null } | null;
 }
 
 interface TemplateClick {
@@ -118,7 +118,7 @@ const Admin: React.FC = () => {
     
     const [templatesRes, pageViewsRes, clicksRes, reportsRes, profilesRes] = await Promise.all([
       supabase.from('templates').select('*').order('created_at', { ascending: false }),
-      supabase.from('page_views').select('*, profiles(email)').order('created_at', { ascending: false }).limit(100),
+      supabase.from('page_views').select('*').order('created_at', { ascending: false }).limit(100),
       supabase.from('template_clicks').select('*, templates(title)').order('created_at', { ascending: false }).limit(100),
       supabase.from('chat_reports').select('*').order('created_at', { ascending: false }),
       supabase.from('profiles').select('*').order('created_at', { ascending: false })
@@ -464,8 +464,8 @@ const Admin: React.FC = () => {
                             {new Date(view.created_at).toLocaleString()}
                           </span>
                         </div>
-                        {view.profiles?.email && (
-                          <span className="text-xs text-primary">{view.profiles.email}</span>
+                        {view.user_id && (
+                          <span className="text-xs text-primary">User: {view.user_id.slice(0, 8)}...</span>
                         )}
                       </div>
                     ))}

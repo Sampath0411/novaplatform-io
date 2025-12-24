@@ -73,7 +73,10 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onDownload }) => 
     await handleClick();
     
     // Update download count
-    await supabase.rpc('increment_download_count', { template_id: template.id }).catch(() => {});
+    await supabase
+      .from('templates')
+      .update({ download_count: (template.download_count || 0) + 1 })
+      .eq('id', template.id);
     
     window.open(template.file_url, '_blank');
     toast.success('Download started!');
