@@ -6,6 +6,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ChatBot from '@/components/ChatBot';
 import TemplateCard from '@/components/TemplateCard';
+import PageTransition from '@/components/PageTransition';
 import { Loader2, Folder, FileCode, Gamepad2, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
@@ -79,7 +80,8 @@ const CategoryPage: React.FC = () => {
   }, [searchQuery, templates]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <PageTransition>
+      <div className="min-h-screen flex flex-col bg-background">
       <Header />
       
       <main className="flex-1">
@@ -153,7 +155,8 @@ const CategoryPage: React.FC = () => {
 
       <Footer />
       <ChatBot />
-    </div>
+      </div>
+    </PageTransition>
   );
 };
 
