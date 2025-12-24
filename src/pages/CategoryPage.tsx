@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import Header from '@/components/layout/Header';
@@ -22,7 +22,10 @@ interface Template {
 }
 
 const CategoryPage: React.FC = () => {
-  const { category } = useParams<{ category: string }>();
+  const location = useLocation();
+  // Extract category from pathname (e.g., "/software" -> "software")
+  const category = location.pathname.slice(1) || 'software';
+  
   const [templates, setTemplates] = useState<Template[]>([]);
   const [filteredTemplates, setFilteredTemplates] = useState<Template[]>([]);
   const [isLoading, setIsLoading] = useState(true);
