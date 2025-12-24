@@ -6,6 +6,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ChatBot from '@/components/ChatBot';
 import TemplateCard from '@/components/TemplateCard';
+import PageTransition from '@/components/PageTransition';
 import { Button } from '@/components/ui/button';
 import { Sparkles, ArrowRight, Folder, Gamepad2, FileCode, Loader2, Download } from 'lucide-react';
 
@@ -60,7 +61,8 @@ const Index: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <PageTransition>
+      <div className="min-h-screen flex flex-col bg-background">
       <Header />
       
       <main className="flex-1">
@@ -200,7 +202,8 @@ const Index: React.FC = () => {
 
       <Footer />
       <ChatBot />
-    </div>
+      </div>
+    </PageTransition>
   );
 };
 
