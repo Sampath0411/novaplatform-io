@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Download, Eye, Folder, Gamepad2, FileCode } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -52,8 +53,10 @@ const formatFileSize = (bytes: number | null) => {
 
 const TemplateCard: React.FC<TemplateCardProps> = ({ template, onDownload }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
-  const handleClick = async () => {
+  const handleClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     try {
       await supabase.from('template_clicks').insert({
         template_id: template.id,
@@ -64,13 +67,19 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onDownload }) => 
     }
   };
 
-  const handleDownload = async () => {
+  const handleCardClick = () => {
+    navigate(`/template/${template.id}`);
+  };
+
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
     if (!template.file_url) {
       toast.error('Download not available');
       return;
     }
 
-    await handleClick();
+    await handleClick(e);
     
     // Update download count
     await supabase
@@ -85,8 +94,8 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onDownload }) => 
 
   return (
     <div 
-      className="group relative bg-card rounded-xl border border-border/50 overflow-hidden card-hover"
-      onClick={handleClick}
+      className="group relative bg-card rounded-xl border border-border/50 overflow-hidden card-hover cursor-pointer"
+      onClick={handleCardClick}
     >
       {/* Thumbnail */}
       <div className="relative aspect-video bg-muted overflow-hidden">

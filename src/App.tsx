@@ -8,6 +8,7 @@ import { AnimatePresence } from "framer-motion";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import CategoryPage from "./pages/CategoryPage";
+import TemplateDetail from "./pages/TemplateDetail";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -24,6 +25,7 @@ const AnimatedRoutes = () => {
         <Route path="/software" element={<CategoryPage />} />
         <Route path="/games" element={<CategoryPage />} />
         <Route path="/files" element={<CategoryPage />} />
+        <Route path="/template/:id" element={<TemplateDetail />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
