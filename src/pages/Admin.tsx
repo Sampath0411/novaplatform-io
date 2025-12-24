@@ -35,7 +35,8 @@ import {
   Gamepad2,
   Folder,
   X,
-  Check
+  Check,
+  Link as LinkIcon
 } from 'lucide-react';
 
 interface Template {
@@ -90,6 +91,8 @@ const Admin: React.FC = () => {
   const [category, setCategory] = useState('software');
   const [file, setFile] = useState<File | null>(null);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
+  const [externalLink, setExternalLink] = useState('');
+  const [linkTitle, setLinkTitle] = useState('');
   const [uploading, setUploading] = useState(false);
 
   // Data state
@@ -186,6 +189,8 @@ const Admin: React.FC = () => {
         file_url: fileUrlData.publicUrl,
         file_size: file.size,
         thumbnail_url: thumbnailUrl,
+        external_link: externalLink || null,
+        link_title: linkTitle || null,
         created_by: user?.id
       });
 
@@ -197,6 +202,8 @@ const Admin: React.FC = () => {
       setCategory('software');
       setFile(null);
       setThumbnail(null);
+      setExternalLink('');
+      setLinkTitle('');
       fetchAllData();
     } catch (error) {
       console.error('Upload error:', error);
@@ -377,6 +384,31 @@ const Admin: React.FC = () => {
                       type="file"
                       accept="image/*"
                       onChange={(e) => setThumbnail(e.target.files?.[0] || null)}
+                      className="bg-muted"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="externalLink" className="flex items-center gap-2">
+                      <LinkIcon className="h-4 w-4" />
+                      External Link (optional)
+                    </Label>
+                    <Input
+                      id="externalLink"
+                      value={externalLink}
+                      onChange={(e) => setExternalLink(e.target.value)}
+                      placeholder="https://example.com"
+                      className="bg-muted"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="linkTitle">Link Title (optional)</Label>
+                    <Input
+                      id="linkTitle"
+                      value={linkTitle}
+                      onChange={(e) => setLinkTitle(e.target.value)}
+                      placeholder="Visit Website"
                       className="bg-muted"
                     />
                   </div>
