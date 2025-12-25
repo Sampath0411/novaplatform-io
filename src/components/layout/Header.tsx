@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import SearchBar from '@/components/SearchBar';
 import { LogOut, User, Shield, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 
@@ -45,6 +46,11 @@ const Header: React.FC = () => {
             Files
           </Link>
         </nav>
+
+        {/* Search Bar */}
+        <div className="hidden lg:block">
+          <SearchBar />
+        </div>
 
         {/* Auth Buttons */}
         <div className="hidden md:flex items-center gap-3">

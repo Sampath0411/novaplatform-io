@@ -36,7 +36,8 @@ import {
   Folder,
   X,
   Check,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Pencil
 } from 'lucide-react';
 
 interface Template {
@@ -49,6 +50,8 @@ interface Template {
   thumbnail_url: string | null;
   download_count: number | null;
   created_at: string;
+  external_link: string | null;
+  link_title: string | null;
 }
 
 interface PageView {
@@ -95,6 +98,14 @@ const Admin: React.FC = () => {
   const [linkTitle, setLinkTitle] = useState('');
   const [uploading, setUploading] = useState(false);
 
+  // Edit state
+  const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editCategory, setEditCategory] = useState('software');
+  const [editExternalLink, setEditExternalLink] = useState('');
+  const [editLinkTitle, setEditLinkTitle] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
   // Data state
   const [templates, setTemplates] = useState<Template[]>([]);
   const [pageViews, setPageViews] = useState<PageView[]>([]);
@@ -223,6 +234,45 @@ const Admin: React.FC = () => {
       toast.success('Template deleted');
       fetchAllData();
     }
+  };
+
+  const handleEditTemplate = (template: Template) => {
+    setEditingTemplate(template);
+    setEditTitle(template.title);
+    setEditDescription(template.description || '');
+    setEditCategory(template.category);
+    setEditExternalLink(template.external_link || '');
+    setEditLinkTitle(template.link_title || '');
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingTemplate) return;
+
+    const { error } = await supabase
+      .from('templates')
+      .update({
+        title: editTitle,
+        description: editDescription,
+        category: editCategory,
+        external_link: editExternalLink || null,
+        link_title: editLinkTitle || null,
+      })
+      .eq('id', editingTemplate.id);
+
+    if (error) {
+      toast.error('Failed to update template');
+    } else {
+      toast.success('Template updated successfully!');
+      setIsEditing(false);
+      setEditingTemplate(null);
+      fetchAllData();
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditingTemplate(null);
   };
 
   const handleUpdateReportStatus = async (id: string, status: string) => {
@@ -461,7 +511,15 @@ const Admin: React.FC = () => {
                           <td className="p-4 text-muted-foreground text-sm">
                             {new Date(template.created_at).toLocaleDateString()}
                           </td>
-                          <td className="p-4 text-right">
+                          <td className="p-4 text-right flex items-center justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEditTemplate(template)}
+                              className="text-primary hover:text-primary hover:bg-primary/10"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
                             <Button
                               variant="ghost"
                               size="sm"
@@ -622,6 +680,107 @@ const Admin: React.FC = () => {
       </main>
 
       <Footer />
+
+      {/* Edit Template Modal */}
+      {isEditing && editingTemplate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="bg-card rounded-xl border border-border/50 p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-display text-xl font-semibold">Edit Template</h2>
+              <button onClick={handleCancelEdit} className="p-2 hover:bg-muted rounded-lg">
+                <X className="h-5 w-5 text-muted-foreground" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="editTitle">Title</Label>
+                <Input
+                  id="editTitle"
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  className="bg-muted"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="editDescription">Description</Label>
+                <Textarea
+                  id="editDescription"
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  className="bg-muted"
+                  rows={3}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Category</Label>
+                <Select value={editCategory} onValueChange={setEditCategory}>
+                  <SelectTrigger className="bg-muted">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="software">
+                      <div className="flex items-center gap-2">
+                        <FileCode className="h-4 w-4" />
+                        Software
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="games">
+                      <div className="flex items-center gap-2">
+                        <Gamepad2 className="h-4 w-4" />
+                        Games
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="files">
+                      <div className="flex items-center gap-2">
+                        <Folder className="h-4 w-4" />
+                        Files
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="editExternalLink" className="flex items-center gap-2">
+                  <LinkIcon className="h-4 w-4" />
+                  External Link
+                </Label>
+                <Input
+                  id="editExternalLink"
+                  value={editExternalLink}
+                  onChange={(e) => setEditExternalLink(e.target.value)}
+                  placeholder="https://example.com"
+                  className="bg-muted"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="editLinkTitle">Link Title</Label>
+                <Input
+                  id="editLinkTitle"
+                  value={editLinkTitle}
+                  onChange={(e) => setEditLinkTitle(e.target.value)}
+                  placeholder="Visit Website"
+                  className="bg-muted"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <Button variant="outline" onClick={handleCancelEdit} className="flex-1">
+                  Cancel
+                </Button>
+                <Button variant="glow" onClick={handleSaveEdit} className="flex-1">
+                  <Check className="h-4 w-4 mr-2" />
+                  Save Changes
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
