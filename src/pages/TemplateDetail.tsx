@@ -142,39 +142,49 @@ const TemplateDetail: React.FC = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen flex flex-col bg-background">
+      <div className="min-h-screen flex flex-col bg-background relative overflow-hidden">
+        {/* Animated background */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-morph" />
+          <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-secondary/5 rounded-full blur-3xl animate-pulse-glow" />
+          <div className="absolute top-20 left-20 w-2 h-2 bg-primary rounded-full animate-float opacity-60" />
+          <div className="absolute bottom-40 right-32 w-3 h-3 bg-nova-purple rounded-full animate-bounce-gentle opacity-40" />
+        </div>
+        
         <Header />
         
-        <main className="flex-1 py-8">
+        <main className="flex-1 py-8 relative z-10">
           <div className="container mx-auto px-4">
             {/* Back Button */}
             <Button
               variant="ghost"
               onClick={() => navigate(-1)}
-              className="mb-6 text-muted-foreground hover:text-foreground"
+              className="mb-6 text-muted-foreground hover:text-foreground animate-fade-in-left group"
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
+              <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
               Back
             </Button>
 
             <div className="grid lg:grid-cols-2 gap-8">
               {/* Thumbnail Section */}
-              <div className="space-y-4">
-                <div className="relative aspect-video bg-muted rounded-xl overflow-hidden border border-border/50">
+              <div className="space-y-4 animate-fade-in-left" style={{ animationDelay: '0.1s' }}>
+                <div className="relative aspect-video bg-muted rounded-xl overflow-hidden border border-border/50 group hover:border-primary/30 transition-all duration-500">
                   {template.thumbnail_url ? (
                     <img
                       src={template.thumbnail_url}
                       alt={template.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-background">
-                      {getCategoryIcon(template.category)}
+                      <div className="animate-bounce-gentle">
+                        {getCategoryIcon(template.category)}
+                      </div>
                     </div>
                   )}
                   
                   {/* Category Badge */}
-                  <div className={`absolute top-4 left-4 px-4 py-1.5 rounded-full text-sm font-medium border ${getCategoryColor(template.category)}`}>
+                  <div className={`absolute top-4 left-4 px-4 py-1.5 rounded-full text-sm font-medium border ${getCategoryColor(template.category)} animate-fade-in`}>
                     <span className="flex items-center gap-2">
                       {getCategoryIcon(template.category)}
                       {template.category}
@@ -184,14 +194,14 @@ const TemplateDetail: React.FC = () => {
               </div>
 
               {/* Info Section */}
-              <div className="space-y-6">
+              <div className="space-y-6 animate-fade-in-right" style={{ animationDelay: '0.2s' }}>
                 <div>
-                  <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">
+                  <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2 animate-fade-in-up">
                     {template.title}
                   </h1>
                   
                   {template.description && (
-                    <p className="text-muted-foreground text-lg leading-relaxed">
+                    <p className="text-muted-foreground text-lg leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
                       {template.description}
                     </p>
                   )}
@@ -199,9 +209,9 @@ const TemplateDetail: React.FC = () => {
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-card rounded-xl border border-border/50 p-4">
+                  <div className="bg-card rounded-xl border border-border/50 p-4 hover:border-primary/30 transition-all duration-300 hover:scale-[1.02] animate-fade-in-up" style={{ animationDelay: '0.35s' }}>
                     <div className="flex items-center gap-3 text-muted-foreground mb-1">
-                      <HardDrive className="h-5 w-5 text-primary" />
+                      <HardDrive className="h-5 w-5 text-primary animate-bounce-gentle" />
                       <span className="text-sm">File Size</span>
                     </div>
                     <p className="font-display text-xl font-bold text-foreground">
@@ -209,9 +219,9 @@ const TemplateDetail: React.FC = () => {
                     </p>
                   </div>
                   
-                  <div className="bg-card rounded-xl border border-border/50 p-4">
+                  <div className="bg-card rounded-xl border border-border/50 p-4 hover:border-nova-green/30 transition-all duration-300 hover:scale-[1.02] animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
                     <div className="flex items-center gap-3 text-muted-foreground mb-1">
-                      <Eye className="h-5 w-5 text-nova-green" />
+                      <Eye className="h-5 w-5 text-nova-green animate-bounce-gentle" style={{ animationDelay: '-0.5s' }} />
                       <span className="text-sm">Downloads</span>
                     </div>
                     <p className="font-display text-xl font-bold text-foreground">
@@ -219,9 +229,9 @@ const TemplateDetail: React.FC = () => {
                     </p>
                   </div>
                   
-                  <div className="bg-card rounded-xl border border-border/50 p-4 col-span-2">
+                  <div className="bg-card rounded-xl border border-border/50 p-4 col-span-2 hover:border-nova-purple/30 transition-all duration-300 hover:scale-[1.01] animate-fade-in-up" style={{ animationDelay: '0.45s' }}>
                     <div className="flex items-center gap-3 text-muted-foreground mb-1">
-                      <Calendar className="h-5 w-5 text-nova-purple" />
+                      <Calendar className="h-5 w-5 text-nova-purple animate-bounce-gentle" style={{ animationDelay: '-1s' }} />
                       <span className="text-sm">Uploaded On</span>
                     </div>
                     <p className="font-display text-xl font-bold text-foreground">
@@ -235,15 +245,15 @@ const TemplateDetail: React.FC = () => {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
                   <Button 
                     variant="glow" 
                     size="lg" 
                     onClick={handleDownload}
-                    className="flex-1"
+                    className="flex-1 group hover:scale-105 transition-transform"
                     disabled={!template.file_url}
                   >
-                    <Download className="h-5 w-5 mr-2" />
+                    <Download className="h-5 w-5 mr-2 group-hover:animate-bounce-gentle" />
                     Download Now
                   </Button>
                   
@@ -252,9 +262,9 @@ const TemplateDetail: React.FC = () => {
                       variant="outline"
                       size="lg"
                       onClick={() => window.open(template.external_link!, '_blank')}
-                      className="flex-1"
+                      className="flex-1 group hover:scale-105 transition-transform"
                     >
-                      <ExternalLink className="h-5 w-5 mr-2" />
+                      <ExternalLink className="h-5 w-5 mr-2 group-hover:rotate-12 transition-transform" />
                       {template.link_title || 'Visit Link'}
                     </Button>
                   )}
