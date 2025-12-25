@@ -116,11 +116,11 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onDownload }) => 
           {template.category}
         </div>
 
-        {/* Hover Overlay */}
+        {/* Hover Overlay - View Details only */}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
-          <Button variant="glow" size="sm" onClick={handleDownload}>
-            <Download className="h-4 w-4 mr-1" />
-            Download
+          <Button variant="glow" size="sm">
+            <Eye className="h-4 w-4 mr-1" />
+            View Details
           </Button>
         </div>
       </div>
