@@ -101,28 +101,40 @@ const Auth: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background grid-pattern relative overflow-hidden">
-      {/* Background Effects */}
+      {/* Animated Background Effects */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-morph" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-morph" style={{ animationDelay: '-4s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-nova-purple/5 rounded-full blur-3xl animate-pulse-glow" />
+        
+        {/* Floating particles */}
+        <div className="absolute top-20 left-20 w-2 h-2 bg-primary rounded-full animate-float opacity-60" />
+        <div className="absolute top-40 right-32 w-3 h-3 bg-secondary rounded-full animate-float opacity-40" style={{ animationDelay: '-1s' }} />
+        <div className="absolute bottom-32 left-40 w-2 h-2 bg-nova-green rounded-full animate-float opacity-50" style={{ animationDelay: '-2s' }} />
+        <div className="absolute top-1/3 right-20 w-4 h-4 bg-nova-pink/50 rounded-full animate-bounce-gentle" />
+        <div className="absolute bottom-1/4 right-1/3 w-2 h-2 bg-primary rounded-full animate-float opacity-70" style={{ animationDelay: '-0.5s' }} />
+        
+        {/* Animated rings */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] border border-primary/10 rounded-full animate-spin-slow" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] border border-secondary/5 rounded-full animate-spin-slow" style={{ animationDirection: 'reverse', animationDuration: '12s' }} />
       </div>
 
       <div className="relative z-10 w-full max-w-md mx-4">
         {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-3 mb-4">
-            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center font-display font-bold text-primary-foreground text-2xl shadow-lg shadow-primary/30">
+        <div className="text-center mb-8 animate-fade-in-down">
+          <div className="inline-flex items-center gap-3 mb-4 group">
+            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center font-display font-bold text-primary-foreground text-2xl shadow-lg shadow-primary/30 group-hover:animate-wiggle transition-all duration-300 animate-scale-bounce">
               N
             </div>
-            <span className="font-display font-bold text-2xl text-gradient">Nova's Platform</span>
+            <span className="font-display font-bold text-2xl text-gradient animate-fade-in" style={{ animationDelay: '0.2s' }}>Nova's Platform</span>
           </div>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground animate-fade-in" style={{ animationDelay: '0.3s' }}>
             {isLogin ? 'Welcome back! Please sign in.' : 'Create your account to get started.'}
           </p>
         </div>
 
         {/* Auth Card */}
-        <div className="bg-card/80 backdrop-blur-xl rounded-2xl border border-border/50 p-8 shadow-2xl shadow-primary/5">
+        <div className="bg-card/80 backdrop-blur-xl rounded-2xl border border-border/50 p-8 shadow-2xl shadow-primary/5 animate-fade-in-up hover:shadow-primary/20 transition-all duration-500" style={{ animationDelay: '0.4s' }}>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-foreground">Email</Label>

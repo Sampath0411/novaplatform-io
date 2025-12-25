@@ -94,7 +94,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onDownload }) => 
 
   return (
     <div 
-      className="group relative bg-card rounded-xl border border-border/50 overflow-hidden card-hover cursor-pointer"
+      className="group relative bg-card rounded-xl border border-border/50 overflow-hidden card-hover cursor-pointer hover:border-primary/30 transition-all duration-500"
       onClick={handleCardClick}
     >
       {/* Thumbnail */}
@@ -103,11 +103,13 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onDownload }) => 
           <img
             src={template.thumbnail_url}
             alt={template.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-background">
-            {getCategoryIcon(template.category)}
+            <div className="group-hover:animate-bounce-gentle transition-all">
+              {getCategoryIcon(template.category)}
+            </div>
           </div>
         )}
         
