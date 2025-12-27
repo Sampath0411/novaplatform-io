@@ -40,7 +40,7 @@ import {
   Pencil,
   HardDrive
 } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
+
 
 interface Template {
   id: string;
@@ -149,6 +149,38 @@ const Admin: React.FC = () => {
     setLoadingData(false);
   };
 
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const result = reader.result as string;
+        // Remove the data URL prefix (e.g., "data:application/zip;base64,")
+        const base64 = result.split(',')[1];
+        resolve(base64);
+      };
+      reader.onerror = reject;
+    });
+  };
+
+  const uploadToTelegram = async (file: File): Promise<string> => {
+    const base64 = await fileToBase64(file);
+    
+    const response = await supabase.functions.invoke('telegram-storage', {
+      body: {
+        action: 'upload',
+        fileBase64: base64,
+        fileName: file.name,
+        fileType: file.type,
+      },
+    });
+
+    if (response.error) throw new Error(response.error.message);
+    if (!response.data.success) throw new Error(response.data.error || 'Upload failed');
+    
+    return response.data.fileId;
+  };
+
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !file) {
@@ -159,24 +191,13 @@ const Admin: React.FC = () => {
     setUploading(true);
 
     try {
-      // Upload main file
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-      const filePath = `files/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('templates')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: fileUrlData } = supabase.storage
-        .from('templates')
-        .getPublicUrl(filePath);
+      // Upload main file to Telegram
+      toast.info('Uploading file to Telegram...');
+      const fileId = await uploadToTelegram(file);
 
       let thumbnailUrl = null;
 
-      // Upload thumbnail if provided
+      // Upload thumbnail to Supabase storage (thumbnails are small, keep them in Supabase for direct access)
       if (thumbnail) {
         const thumbExt = thumbnail.name.split('.').pop();
         const thumbName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${thumbExt}`;
@@ -194,12 +215,12 @@ const Admin: React.FC = () => {
         }
       }
 
-      // Create template record
+      // Create template record with Telegram file ID as file_url
       const { error: insertError } = await supabase.from('templates').insert({
         title,
         description,
         category,
-        file_url: fileUrlData.publicUrl,
+        file_url: `telegram:${fileId}`, // Store Telegram file ID with prefix
         file_size: file.size,
         thumbnail_url: thumbnailUrl,
         external_link: externalLink || null,
@@ -304,13 +325,8 @@ const Admin: React.FC = () => {
   const totalUsers = profiles.length;
   const pendingReports = chatReports.filter(r => r.status === 'pending').length;
   
-  // Storage calculation (1GB limit for free tier)
-  const MAX_STORAGE_GB = 1;
-  const MAX_STORAGE_BYTES = MAX_STORAGE_GB * 1024 * 1024 * 1024;
+  // Storage calculation (Telegram has unlimited storage)
   const usedStorageBytes = templates.reduce((acc, t) => acc + (t.file_size || 0), 0);
-  const usedStorageMB = usedStorageBytes / (1024 * 1024);
-  const usedStorageGB = usedStorageBytes / (1024 * 1024 * 1024);
-  const storagePercentage = Math.min((usedStorageBytes / MAX_STORAGE_BYTES) * 100, 100);
   
   const formatStorage = (bytes: number) => {
     if (bytes >= 1024 * 1024 * 1024) {
@@ -346,20 +362,16 @@ const Admin: React.FC = () => {
               </div>
             ))}
             
-            {/* Storage Card */}
+            {/* Storage Card - Telegram Storage (Unlimited) */}
             <div className="bg-card rounded-xl border border-border/50 p-4">
               <div className="flex items-center justify-between mb-2">
-                <HardDrive className={`h-5 w-5 ${storagePercentage > 80 ? 'text-destructive' : storagePercentage > 50 ? 'text-nova-orange' : 'text-nova-blue'}`} />
+                <HardDrive className="h-5 w-5 text-nova-blue" />
               </div>
               <p className="font-display text-lg font-bold text-foreground">
                 {formatStorage(usedStorageBytes)}
               </p>
-              <p className="text-xs text-muted-foreground mb-2">of {MAX_STORAGE_GB} GB</p>
-              <Progress 
-                value={storagePercentage} 
-                className={`h-2 ${storagePercentage > 80 ? '[&>div]:bg-destructive' : storagePercentage > 50 ? '[&>div]:bg-nova-orange' : '[&>div]:bg-nova-blue'}`}
-              />
-              <p className="text-xs text-muted-foreground mt-1">{storagePercentage.toFixed(1)}% used</p>
+              <p className="text-xs text-muted-foreground mb-2">Telegram Storage</p>
+              <p className="text-xs text-nova-green">∞ Unlimited</p>
             </div>
           </div>
 
