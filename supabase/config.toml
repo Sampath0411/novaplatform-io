@@ -2,3 +2,6 @@ project_id = "yoikbtkjupnxlyxgafcm"
 
 [functions.chat-assistant]
 verify_jwt = false
+
+[functions.telegram-storage]
+verify_jwt = false

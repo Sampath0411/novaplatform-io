@@ -87,8 +87,34 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onDownload }) => 
       .update({ download_count: (template.download_count || 0) + 1 })
       .eq('id', template.id);
     
-    window.open(template.file_url, '_blank');
-    toast.success('Download started!');
+    // Check if it's a Telegram file
+    if (template.file_url.startsWith('telegram:')) {
+      const fileId = template.file_url.replace('telegram:', '');
+      toast.info('Preparing download...');
+      
+      try {
+        const response = await supabase.functions.invoke('telegram-storage', {
+          body: {
+            action: 'getFile',
+            fileId: fileId,
+          },
+        });
+
+        if (response.error || !response.data.success) {
+          throw new Error(response.data?.error || 'Failed to get download link');
+        }
+
+        window.open(response.data.downloadUrl, '_blank');
+        toast.success('Download started!');
+      } catch (error) {
+        console.error('Download error:', error);
+        toast.error('Failed to download file');
+      }
+    } else {
+      window.open(template.file_url, '_blank');
+      toast.success('Download started!');
+    }
+    
     onDownload?.();
   };
 
