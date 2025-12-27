@@ -37,8 +37,10 @@ import {
   X,
   Check,
   Link as LinkIcon,
-  Pencil
+  Pencil,
+  HardDrive
 } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 
 interface Template {
   id: string;
@@ -301,6 +303,21 @@ const Admin: React.FC = () => {
   const totalDownloads = templates.reduce((acc, t) => acc + (t.download_count || 0), 0);
   const totalUsers = profiles.length;
   const pendingReports = chatReports.filter(r => r.status === 'pending').length;
+  
+  // Storage calculation (1GB limit for free tier)
+  const MAX_STORAGE_GB = 1;
+  const MAX_STORAGE_BYTES = MAX_STORAGE_GB * 1024 * 1024 * 1024;
+  const usedStorageBytes = templates.reduce((acc, t) => acc + (t.file_size || 0), 0);
+  const usedStorageMB = usedStorageBytes / (1024 * 1024);
+  const usedStorageGB = usedStorageBytes / (1024 * 1024 * 1024);
+  const storagePercentage = Math.min((usedStorageBytes / MAX_STORAGE_BYTES) * 100, 100);
+  
+  const formatStorage = (bytes: number) => {
+    if (bytes >= 1024 * 1024 * 1024) {
+      return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+    }
+    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -313,7 +330,7 @@ const Admin: React.FC = () => {
           </h1>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
             {[
               { label: 'Page Views', value: totalViews, icon: Eye, color: 'text-primary' },
               { label: 'Downloads', value: totalDownloads, icon: Download, color: 'text-nova-green' },
@@ -328,6 +345,22 @@ const Admin: React.FC = () => {
                 <p className="text-xs text-muted-foreground">{stat.label}</p>
               </div>
             ))}
+            
+            {/* Storage Card */}
+            <div className="bg-card rounded-xl border border-border/50 p-4">
+              <div className="flex items-center justify-between mb-2">
+                <HardDrive className={`h-5 w-5 ${storagePercentage > 80 ? 'text-destructive' : storagePercentage > 50 ? 'text-nova-orange' : 'text-nova-blue'}`} />
+              </div>
+              <p className="font-display text-lg font-bold text-foreground">
+                {formatStorage(usedStorageBytes)}
+              </p>
+              <p className="text-xs text-muted-foreground mb-2">of {MAX_STORAGE_GB} GB</p>
+              <Progress 
+                value={storagePercentage} 
+                className={`h-2 ${storagePercentage > 80 ? '[&>div]:bg-destructive' : storagePercentage > 50 ? '[&>div]:bg-nova-orange' : '[&>div]:bg-nova-blue'}`}
+              />
+              <p className="text-xs text-muted-foreground mt-1">{storagePercentage.toFixed(1)}% used</p>
+            </div>
           </div>
 
           <Tabs defaultValue="upload" className="space-y-6">
